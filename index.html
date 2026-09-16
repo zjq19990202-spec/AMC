@@ -42,59 +42,41 @@
   </nav>
 </header>
 <main id="main">
+  <section class="section narrow" id="abstract">
+    <h2>Abstract</h2>
+    <p>Can changing only the language instruction redirect a vision-language-action (VLA) policy’s end effectors, or does the visually driven motion prior dominate? We present AMC (Atomic Motion Coordinate), a geometry-grounded coordinate for steerable and force-responsive manipulation. Each arm owns thirteen translation, rotation, and hold atoms grounded through text and forward kinematics with vision withheld. Under full observation, the resulting coordinate is injected into every action-expert block through a cross-attention residual. Contact history modulates the same coordinate through a bounded spherical residual, recomputed from a fixed nominal latent to regenerate only the unexecuted horizon suffix.</p>
+    <p>Across 7,520 matched offline interventions per policy, AMC achieves 92.5%/83.1% opposite-atom separation for single/dual interventions, compared with 39.1%/24.0% for LA4VLA-style. Across 50 real-robot trials per reported method–task pair, AMC improves out-of-distribution fruit progress over fine-tuned π0.5 from 60.5% to 87.8%. Adding force adaptation improves Plug/Vase progress over force-free AMC from 59.0%/71.6% to 78.5%/75.2%.</p>
+  </section>
   <section id="steering" class="section">
     <h2>Atomic Steering</h2>
-    <p class="intro">Same images. Same robot state. Different language instructions.<br>Can a signed motion instruction redirect the predicted trajectory?</p>
+    <p class="intro">Same images and robot state; only the language instruction changes.</p>
     <figure class="steering-figure">
       <div class="steering-scroll"><a href="images/atomic-steering.png" target="_blank" rel="noopener" aria-label="Open full-resolution atomic steering figure"><img src="images/atomic-steering.png" alt="Six fixed-observation examples: positive and negative x, y, z translation and rotation prompts produce distinct predicted trajectories, compared with the native subtask and Empty prompt."></a></div>
-      <figcaption>Translation (a–c) and rotation (d–f), over 50 predicted actions. Red: positive atom; blue: negative atom; dark gray: native subtask; light gray: Empty. Click to enlarge.</figcaption>
+      <figcaption>50-step prediction. Red / blue: positive / negative atom; dark / light gray: native subtask / Empty. Click to enlarge.</figcaption>
     </figure>
-    <div class="steering-copy">
-      <p>Only the prompt changes: observations, robot state, normalization, sampler and initial flow noise are held fixed within each policy. Forward kinematics maps the predictions to end-effector motion; these offline trajectories are not executed on the robot.</p>
-      <p><strong>Single</strong> requests one signed direction. <strong>Dual</strong> requests two compatible components on the same target arm, while the other arm holds. Both components must pass—not just one.</p>
-    </div>
-    <h3>Matched language interventions</h3>
-    <p class="intro">7,520 interventions per policy across 948 recorded states · Horizon 50 · Thresholds: 10 mm / 2°</p>
-    <div class="table-scroll"><table class="steering-table">
-      <caption class="sr-only">Offline atomic steering success rates in percent for four policies.</caption>
-      <thead><tr><th scope="col">Method</th><th scope="col">Request</th><th scope="col">Absolute</th><th scope="col">Vs. Empty</th><th scope="col">Pair separation</th></tr></thead>
+    <p class="steering-summary">Offline FK evaluation on 7,520 matched interventions per policy. <strong>Single</strong> requests one signed direction; <strong>Dual</strong> requires two compatible directions on one arm. Pair separation measures whether opposite prompts are correctly ordered.</p>
+    <div class="table-scroll"><table class="steering-table compact-table">
+      <caption class="sr-only">Atomic steering pair separation in percent for four policies.</caption>
+      <thead><tr><th scope="col">Method</th><th scope="col">Single pair separation</th><th scope="col">Dual pair separation</th></tr></thead>
       <tbody>
-        <tr><th scope="row">Fine-tuned π0.5</th><td>Single</td><td>50.5</td><td>18.3</td><td>18.1</td></tr>
-        <tr><th scope="row">Fine-tuned π0.5</th><td>Dual</td><td>37.1</td><td>6.9</td><td>8.1</td></tr>
-        <tr><th scope="row">LA4VLA-style</th><td>Single</td><td>52.9</td><td>31.7</td><td>39.1</td></tr>
-        <tr><th scope="row">LA4VLA-style</th><td>Dual</td><td>37.9</td><td>13.2</td><td>24.0</td></tr>
-        <tr><th scope="row">RSS</th><td>Single</td><td>52.6</td><td>39.2</td><td>60.7</td></tr>
-        <tr><th scope="row">RSS</th><td>Dual</td><td>26.2</td><td>9.7</td><td>22.5</td></tr>
-        <tr class="ours"><th scope="row">AMC</th><td>Single</td><td><strong>80.2</strong></td><td><strong>74.5</strong></td><td><strong>92.5</strong></td></tr>
-        <tr class="ours"><th scope="row">AMC</th><td>Dual</td><td><strong>57.9</strong></td><td><strong>39.1</strong></td><td><strong>83.1</strong></td></tr>
+        <tr><th scope="row">Fine-tuned π0.5</th><td>18.1</td><td>8.1</td></tr>
+        <tr><th scope="row">LA4VLA-style</th><td>39.1</td><td>24.0</td></tr>
+        <tr><th scope="row">RSS</th><td>60.7</td><td>22.5</td></tr>
+        <tr class="ours"><th scope="row">AMC</th><td><strong>92.5</strong></td><td><strong>83.1</strong></td></tr>
       </tbody>
     </table></div>
-    <p class="table-note"><strong>Absolute</strong>: motion in the requested signed direction. <strong>Vs. Empty</strong>: signed displacement relative to the empty-prompt prediction. <strong>Pair separation</strong>: correctly ordered, threshold-separated endpoints for opposite prompts; evaluated on the reversal-supported subset (2,316 single / 2,224 dual interventions).</p>
-    <p class="table-note">Results reproduce the paper’s steering evaluation using the preceding non-spherical AMC 50K checkpoint (25K grounding + 25K full-observation training), not a new evaluation of the spherical release.</p>
-    <p class="steering-takeaway">Atomic steering tests geometric language control. The fruit videos below test whether object- and destination-specific subtask instructions remain executable under visual context.</p>
+    <p class="table-note">Paper steering evaluation, using the non-spherical AMC 50K checkpoint. The real-robot videos below test object- and destination-specific task instructions.</p>
   </section>
   <section id="demos" class="section">
     <h2>Real-Robot Demonstrations</h2>
-    <p class="intro">Language-guided fruit manipulation and contact-rich dual-arm tasks.<br>Each video compares methods on one task; footage is shown at 5× speed.</p>
+    <p class="intro">Each video compares methods on one task; footage is shown at 5× speed.</p>
     <div class="demos">
       <article><h3>Multi-Fruit Sorting</h3><video controls playsinline preload="none" poster="images/fruit-poster.jpg"><source src="assets/fruit-comparison.mp4" type="video/mp4"></video><p>Object- and destination-specific subtask instructions in familiar layouts.</p></article>
       <article><h3>OOD Fruit Sorting</h3><video controls playsinline preload="none" poster="images/ood-poster.jpg"><source src="assets/ood-comparison.mp4" type="video/mp4"></video><p>Subtask steering with unseen fruit and target-box placements.</p></article>
       <article><h3>Drawer Retrieval &amp; Plug Insertion</h3><video controls playsinline preload="none" poster="images/plug-poster.jpg"><source src="assets/plug-comparison.mp4" type="video/mp4"></video><p>Opening, reorientation, alignment and contact-rich insertion.</p></article>
       <article><h3>Bimanual Vase Wiping</h3><video controls playsinline preload="none" poster="images/vase-poster.jpg"><source src="assets/vase-comparison.mp4" type="video/mp4"></video><p>Coordinated stabilization, rotation and sustained wiping contact.</p></article>
     </div>
-  </section>
-  <section class="section narrow" id="abstract">
-    <h2>Abstract</h2>
-    <p>Can changing only the language instruction redirect a vision-language-action (VLA) policy’s end effectors, or does the visually driven motion prior dominate? We present AMC (Atomic Motion Coordinate), a geometry-grounded coordinate for steerable and force-responsive manipulation. Each arm owns thirteen translation, rotation, and hold atoms grounded through text and forward kinematics with vision withheld. Under full observation, the resulting coordinate is injected into every action-expert block through a cross-attention residual. Contact history modulates the same coordinate through a bounded spherical residual, recomputed from a fixed nominal latent to regenerate only the unexecuted horizon suffix.</p>
-    <p>Across 7,520 matched offline interventions per policy, AMC achieves 92.5%/83.1% opposite-atom separation for single/dual interventions, compared with 39.1%/24.0% for LA4VLA-style. Across 50 real-robot trials per reported method–task pair, AMC improves out-of-distribution fruit progress over fine-tuned π0.5 from 60.5% to 87.8%. Adding force adaptation improves Plug/Vase progress over force-free AMC from 59.0%/71.6% to 78.5%/75.2%.</p>
-  </section>
-  <section class="section" id="method">
-    <h2>Method Overview</h2>
-    <p class="intro">The atomic coordinate specifies a motion trend; the action expert generates its scene-conditioned realization.</p>
-    <div class="method-figure"><figure><img loading="lazy" src="images/grounding.png" alt="Vision-free atomic grounding with language, state and forward-kinematics supervision"><figcaption>(a) Vision-free grounding</figcaption></figure><figure><img loading="lazy" src="images/full-observation.png" alt="Full-observation action generation and spherical force adaptation"><figcaption>(b–d) Full-observation execution and force adaptation</figcaption></figure></div>
-    <p class="method-text">Forward-kinematics supervision grounds a named, per-arm motion coordinate. Under full observation, this coordinate conditions every action-expert block. During contact, a bounded force update revises it from the same nominal anchor, retaining the committed action prefix and regenerating only the unexecuted suffix.</p>
-  </section>
-  <section class="section narrow" id="results">
+    <div class="task-results" id="results">
     <h2>Closed-Loop Task Progress</h2>
     <p class="intro">Mean normalized task progress (%) over 50 trials per reported method–task pair.</p>
     <div class="table-scroll"><table><thead><tr><th scope="col">Method</th><th scope="col">Fruit</th><th scope="col">OOD Fruit</th><th scope="col">Plug</th><th scope="col">Vase</th></tr></thead><tbody>
@@ -105,7 +87,8 @@
       <tr class="ours"><th scope="row">AMC</th><td><strong>88.9</strong></td><td><strong>87.8</strong></td><td>59.0</td><td>71.6</td></tr>
       <tr class="ours"><th scope="row">AMC + Force</th><td>—</td><td>—</td><td><strong>78.5</strong></td><td><strong>75.2</strong></td></tr>
     </tbody></table></div>
-    <p class="table-note">Fruit tasks use human-selected subtask prompts; Plug and Vase use planner-generated prompts. Task families are evaluated separately. “—” denotes an untested pair.</p>
+    <p class="table-note">Mean normalized progress over 50 trials per reported method–task pair. “—” denotes an untested pair.</p>
+    </div>
   </section>
 </main>
 <footer>Atomic Motion Coordinate · <a href="assets/amc-paper.pdf">Paper</a> · <a href="https://github.com/zjq19990202-spec/AMC">Code</a></footer>
