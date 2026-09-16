@@ -37,10 +37,42 @@
   <nav class="resources" aria-label="Project resources">
     <a href="assets/amc-paper.pdf">Paper ↗</a>
     <a href="https://github.com/zjq19990202-spec/AMC">Code ↗</a>
+    <a href="#steering">Steering ↓</a>
     <a href="#demos">Videos ↓</a>
   </nav>
 </header>
 <main id="main">
+  <section id="steering" class="section">
+    <h2>Atomic Steering</h2>
+    <p class="intro">Same images. Same robot state. Different language instructions.<br>Can a signed motion instruction redirect the predicted trajectory?</p>
+    <figure class="steering-figure">
+      <div class="steering-scroll"><a href="images/atomic-steering.png" target="_blank" rel="noopener" aria-label="Open full-resolution atomic steering figure"><img src="images/atomic-steering.png" alt="Six fixed-observation examples: positive and negative x, y, z translation and rotation prompts produce distinct predicted trajectories, compared with the native subtask and Empty prompt."></a></div>
+      <figcaption>Translation (a–c) and rotation (d–f), over 50 predicted actions. Red: positive atom; blue: negative atom; dark gray: native subtask; light gray: Empty. Click to enlarge.</figcaption>
+    </figure>
+    <div class="steering-copy">
+      <p>Only the prompt changes: observations, robot state, normalization, sampler and initial flow noise are held fixed within each policy. Forward kinematics maps the predictions to end-effector motion; these offline trajectories are not executed on the robot.</p>
+      <p><strong>Single</strong> requests one signed direction. <strong>Dual</strong> requests two compatible components on the same target arm, while the other arm holds. Both components must pass—not just one.</p>
+    </div>
+    <h3>Matched language interventions</h3>
+    <p class="intro">7,520 interventions per policy across 948 recorded states · Horizon 50 · Thresholds: 10 mm / 2°</p>
+    <div class="table-scroll"><table class="steering-table">
+      <caption class="sr-only">Offline atomic steering success rates in percent for four policies.</caption>
+      <thead><tr><th scope="col">Method</th><th scope="col">Request</th><th scope="col">Absolute</th><th scope="col">Vs. Empty</th><th scope="col">Pair separation</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Fine-tuned π0.5</th><td>Single</td><td>50.5</td><td>18.3</td><td>18.1</td></tr>
+        <tr><th scope="row">Fine-tuned π0.5</th><td>Dual</td><td>37.1</td><td>6.9</td><td>8.1</td></tr>
+        <tr><th scope="row">LA4VLA-style</th><td>Single</td><td>52.9</td><td>31.7</td><td>39.1</td></tr>
+        <tr><th scope="row">LA4VLA-style</th><td>Dual</td><td>37.9</td><td>13.2</td><td>24.0</td></tr>
+        <tr><th scope="row">RSS</th><td>Single</td><td>52.6</td><td>39.2</td><td>60.7</td></tr>
+        <tr><th scope="row">RSS</th><td>Dual</td><td>26.2</td><td>9.7</td><td>22.5</td></tr>
+        <tr class="ours"><th scope="row">AMC</th><td>Single</td><td><strong>80.2</strong></td><td><strong>74.5</strong></td><td><strong>92.5</strong></td></tr>
+        <tr class="ours"><th scope="row">AMC</th><td>Dual</td><td><strong>57.9</strong></td><td><strong>39.1</strong></td><td><strong>83.1</strong></td></tr>
+      </tbody>
+    </table></div>
+    <p class="table-note"><strong>Absolute</strong>: motion in the requested signed direction. <strong>Vs. Empty</strong>: signed displacement relative to the empty-prompt prediction. <strong>Pair separation</strong>: correctly ordered, threshold-separated endpoints for opposite prompts; evaluated on the reversal-supported subset (2,316 single / 2,224 dual interventions).</p>
+    <p class="table-note">Results reproduce the paper’s steering evaluation using the preceding non-spherical AMC 50K checkpoint (25K grounding + 25K full-observation training), not a new evaluation of the spherical release.</p>
+    <p class="steering-takeaway">Atomic steering tests geometric language control. The fruit videos below test whether object- and destination-specific subtask instructions remain executable under visual context.</p>
+  </section>
   <section id="demos" class="section">
     <h2>Real-Robot Demonstrations</h2>
     <p class="intro">Language-guided fruit manipulation and contact-rich dual-arm tasks.<br>Each video compares methods on one task; footage is shown at 5× speed.</p>
