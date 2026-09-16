@@ -1,0 +1,16 @@
+Run: union2375_spherical_rotfree20_w005_from28k_to50k_bs256_20260902
+Source: complete params + Adam state from spherical ZM step 28000
+Dataset roots: cabinet, drawer, fruit, mixed_rest, screw5, plug, vase (union2375)
+Normalization: openpi_norm_union2375_allframes_v1
+Action target: exact raw joint_delta, 50 x 16 active dimensions; no state/action quantile clipping
+Prompt route: 100% sidecar subtask; no global prompt and no atomic-prompt substitution
+ZT/codebook: frozen teacher directions and the identical frozen 2 x 13 codebook
+Visual latent: unit-sphere zM, 45 degree hard cap
+Visual rotation regularizer: squared geodesic excess above 20 degrees, normalized by 45 degrees
+Visual rotation weight: 0.005 with 1000-update linear warmup from restored step 28000
+Main losses: flow 1.0, Q1 teacher cosine 0.05, Drop Top5 weighted cosine 0.015
+Batch: global 256 on 8 H800; FSDP group selected by measured throughput benchmark
+Schedule: preserve restored Adam state and schedule count; train 22000 additional updates to global step 50000
+Vision: trainable
+Precision: bfloat16 model recipe, fp32 geodesic diagnostics/loss
+Checkpoint interval: 1000 updates

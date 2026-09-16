@@ -1,0 +1,17 @@
+{
+  "sample_fps": 5.0,
+  "max_frames": 400,
+  "min_segment_duration_s": 2.0,
+  "single_p1": 0.65,
+  "single_margin": 0.25,
+  "dual_sum": 0.75,
+  "dual_p2": 0.20,
+  "dual_p3_max": 0.12,
+  "fk_translation_scale_m": 0.02,
+  "fk_rotation_scale_rad": 0.075,
+  "fk_activity_threshold": 0.15,
+  "fk_top2_temperature": 0.1,
+  "use_vlm_interaction_gate": false,
+  "review": false,
+  "axis_convention": "+x points forward from the CR1 base, +y points to the robot's left, and +z points upward. Positive rotations follow the right-hand rule about the base-frame +x, +y, and +z axes."
+}

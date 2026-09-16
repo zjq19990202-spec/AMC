@@ -1,0 +1,25 @@
+stage=B2 spherical force-conditioned action flow
+node=tmp8ka
+source=/dev/shm/atomic_latent_vla_run_spherical_zm25k_b2s6k_20260901
+run=force_spherical15_fulltoken40_from_union2375_spherical50k_b2s6000_20260901
+base_params=preceding spherical ZM step50000
+force_init_params=/mnt/cunchu/zjq/atomic_pi05_force_runs/forceonly_zf_zmforecast_plug_vase_afro50k_w512_b1_s6000_20260831/forceonly_zf_zmforecast_plug_vase_afro50k_w512_b1_s6000_20260831/6000/params
+merge=restore spherical ZM policy; overlay only matching trained B1 force_conditioner tensors; initialize new full-token adapter at zero
+datasets=/mnt/cunchu/zjq/target/lerobot_v3_4to1_plug_force,/mnt/cunchu/zjq/target/lerobot_v3_4to1_vase_force
+norm=/mnt/cunchu/zjq/target/openpi_norm_union2375_allframes_v1 q01_q99_no_clip
+force_norm=/mnt/cunchu/zjq/force_assets/force_norm_plug_vase_shared_lr_v1_20260822/norm_stats.json
+force_memory=30 SlowProj + 10 FastProj tokens per arm; query=Proj(zM)+RTC phase; 2-head cross-attention
+trainable=FastProj + full-token adapter + zero-init direct 512D force output + 18 layer gates
+frozen=VLM ActionExpert spherical ZM Q/codebook B1 encoder/SlowProj/future decoder
+geometry=direct force vector projected onto each layer zM tangent plane; smooth 15deg cap; unit sphere output; no force tangent basis
+offsets=0,10,20,30,40
+batch=256 devices=8 per_gpu=32 fsdp_devices=1 mesh=[8,1]
+schedule=steps6000 warmup300 peak_lr=1e-4 decay_steps=6000 decay_lr=1e-5
+loss=flow1 future0 delta_regularization1e-4 improvement1 margin0.001
+2432ab6106932f61c027262f2fe4493239603f15a121482992fbcdce61137842  config.py
+1e4e9f7840bf7fb2dc1ce3c349ecf4f07f13f319bc6d7aa904b96240283ecc6e  model.py
+7031eca548d82af7e4cb4579917a085aec5fac1b39635e0bb29e817b5f705941  gemma_adapter.py
+8dc7e336a01c7cfee0735f1b259348741dd72f650f4353cb0b9b972bb76a580e  force.py
+526874a4309a4412808a43a6aaadf4b1b86cde03c489b572228a11683ef25ca4  force_training_data.py
+f88bb5ea084569f484afd477fdf388c1879a749283ff5cd8e49a7b9cc8c987f4  weights.py
+66422ebdb1786a5e0a120d6d33275d1be9f93c7ac1d97091c22fed0f1c451da2  train_force_stage_b2.py

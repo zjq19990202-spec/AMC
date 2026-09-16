@@ -1,0 +1,16 @@
+diff --git a/src/openpi/transforms.py b/src/openpi/transforms.py
+--- a/src/openpi/transforms.py
++++ b/src/openpi/transforms.py
+@@ -513,10 +513,10 @@ class Normalize(DataTransformFn):
+         q01, q99 = stats.q01, stats.q99
+         if (dim := q01.shape[-1]) < x.shape[-1]:
+             normalized = (x[..., :dim] - q01) / (q99 - q01 + 1e-6) * 2.0 - 1.0
+-            return np.concatenate([np.clip(normalized, -1.0, 1.0), x[..., dim:]], axis=-1)
++            return np.concatenate([normalized, x[..., dim:]], axis=-1)
+         q01, q99 = q01[..., : x.shape[-1]], q99[..., : x.shape[-1]]
+         normalized = (x - q01) / (q99 - q01 + 1e-6) * 2.0 - 1.0
+-        return np.clip(normalized, -1.0, 1.0)
++        return normalized
+ 
+ 
+ @dataclasses.dataclass(frozen=True)

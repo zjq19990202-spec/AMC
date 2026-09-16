@@ -1,0 +1,24 @@
+stage=ZM spherical visual latent
+node=tmp8ka
+source=/dev/shm/atomic_latent_vla_run_spherical_zm25k_b2s6k_20260901
+run=union2375_spherical_zm25k_from_afrozt25k_fsdp8_bs256_20260901
+base_params=/mnt/cunchu/zjq/atomic_pi05_runs/union2375_afro_pi05tok32_zt25k_ddp8_bs256_noacc_tok192_20260827/union2375_afro_pi05tok32_zt25k_ddp8_bs256_noacc_tok192_20260827/25000/params
+initial_step=25000 updates=25000 final_step=50000 optimizer_state=fresh
+datasets=union2375 seven reviewed roots; start-inactive-arm masks enabled
+prompt=100_percent_current_subtask; no global; no atomic prompt replacement
+teacher=seven one-to-one same-state atomic Q1 sidecars from union2375_afro_pi05tok32_zt25000_maskv1_20260828
+horizon=current_subtask_only; pad short segment with its final absolute action
+atomic_composition=fk_horizon_3hz_gate_top5_stay_v2
+tokenizer=official_pi05 max_token_len=192 audited_max=187
+norm_root=/mnt/cunchu/zjq/target norm_id=openpi_norm_union2375_allframes_v1 q01_q99_no_clip
+tcp_norm=/mnt/cunchu/zjq/target/openpi_norm_union2375_allframes_v1/tcp_twist_norm_bimanual_tcp200.json
+state_clip=off action_clip=off optimizer_grad_clip=1.0 vision_frozen=false
+batch=256 devices=8 per_gpu=32 fsdp_devices=8 mesh=[1,8] accumulation=1
+schedule=warmup1000 peak_lr=2.5e-5 decay_steps=30000 decay_lr=2.5e-6
+loss=flow1 q1_teacher_cos0.05 drop_top5_weighted_cos0.015 kl0 codebook_frozen subtask_ce0
+geometry=Q1 unit; four learned visual tangent bases; 45deg smooth bounded sphere map; every layer zM unit
+2432ab6106932f61c027262f2fe4493239603f15a121482992fbcdce61137842  config.py
+1e4e9f7840bf7fb2dc1ce3c349ecf4f07f13f319bc6d7aa904b96240283ecc6e  model.py
+7031eca548d82af7e4cb4579917a085aec5fac1b39635e0bb29e817b5f705941  gemma_adapter.py
+fec33033477f1697e4d7dc9b3d460a1418b35d68867839acf5b4726fca660b8f  training_data.py
+97e8ec98440b0d815d6d8786f0e38a486f1293e548dadb14bed62b56a616f576  train_atomic_pi05.py

@@ -1,0 +1,4 @@
+[console_scripts]
+atomic-latent-build-index = atomic_latent_vla.data.build_index:main
+atomic-latent-segment = atomic_latent_vla.annotation.cli:main
+atomic-latent-segment-batch = atomic_latent_vla.annotation.batch_cli:main

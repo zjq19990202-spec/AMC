@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atomic-latent-vla"
+version = "0.1.0"
+description = "CR1 atomic annotation pipeline and native-JAX π0.5-derived policy"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.24,<2",
+  "pillow>=10",
+]
+
+[project.optional-dependencies]
+data = ["h5py>=3.10"]
+annotation = [
+  "dashscope>=1.26",
+  "h5py>=3.10",
+  "openai>=1.40",
+  "opencv-python-headless>=4.8",
+  "pyarrow>=14",
+  "pydantic>=2.5,<3",
+]
+fk = ["pin>=3.0"]
+dev = ["pytest>=8", "ruff>=0.9"]
+visualization = ["matplotlib>=3.7", "trimesh>=4"]
+
+[project.scripts]
+atomic-latent-build-index = "atomic_latent_vla.data.build_index:main"
+atomic-latent-segment = "atomic_latent_vla.annotation.cli:main"
+atomic-latent-segment-batch = "atomic_latent_vla.annotation.batch_cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

@@ -1,0 +1,107 @@
+Metadata-Version: 2.4
+Name: atomic-latent-vla
+Version: 0.1.0
+Summary: Portable atomic-latent and force-conditioned action policy research scaffold
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy<2,>=1.24
+Requires-Dist: torch>=2.1
+Requires-Dist: pillow>=10
+Provides-Extra: data
+Requires-Dist: h5py>=3.10; extra == "data"
+Provides-Extra: qwen
+Requires-Dist: transformers>=4.57; extra == "qwen"
+Requires-Dist: accelerate>=1.0; extra == "qwen"
+Provides-Extra: annotation
+Requires-Dist: h5py>=3.10; extra == "annotation"
+Requires-Dist: openai>=1.40; extra == "annotation"
+Requires-Dist: opencv-python-headless>=4.8; extra == "annotation"
+Requires-Dist: pydantic<3,>=2.5; extra == "annotation"
+Provides-Extra: fk
+Requires-Dist: pin>=3.0; extra == "fk"
+Provides-Extra: dev
+Requires-Dist: pytest>=8; extra == "dev"
+Requires-Dist: ruff>=0.9; extra == "dev"
+
+# Atomic Latent VLA
+
+这是一个独立、可迁移的研究仓库，用来保留并验证我们的核心设计，而不是绑定某个现成 VLA。
+
+当前默认组合是：
+
+- Qwen3-VL 只负责产生上下文化 token，不修改其内部生成结构；
+- Q1 产生 12 类空间原子动作方向，Q2/Q3 产生 scale 与切空间细节，Q4 提取带上下文的数值/力目标；
+- 一个 Flow-Matching Transformer Action Expert 预测长度 50 的 30 Hz 动作块：flow time 单独调制 AdaLN，16 个自由 Adapter 由动作 latent 每个 chunk 选择 Top-4；
+- Router 使用标准 Switch auxiliary loss（默认 `1e-3`）防止 Adapter 负载坍缩，并使用 router z-loss（默认 `1e-4`）稳定未归一化 latent 产生的 logits；
+- 可选的 120 Hz `force + state` 因果 GRU 作为记忆，由 `Q4 + z_M` 查询并对动作 latent 做零初始化残差修正；
+- 数据层读取 CR1 HDF5 和原子分段 JSON，兼容旧单标签和新 Top-2 标签。
+
+## 为什么单独建仓库
+
+`AtomicLatentPolicyCore` 的输入是普通 hidden tokens，不依赖 Qwen 类。Qwen3-VL 只是一个 adapter；未来选定 OpenVLA、π0、LingBot-VLA 或其他 backbone 时，替换 `ContextBackbone` 即可。动作专家也只依赖统一的 `PolicyBatch`。
+
+Adapter Router 与 12 维原子 Codebook 没有编号或相似度对齐关系。Codebook 组织原子语义；16 个 Adapter 是由轨迹 Flow Matching 自主形成的计算模块。
+
+## 安装与测试
+
+```bash
+cd /home/admin123/zjq/atomic_latent_vla
+python -m pip install -e '.[data,qwen,annotation,dev]'
+pytest -q
+```
+
+当前机器若出现 `h5py`/NumPy ABI 错误，重装与当前 NumPy 匹配的 wheel：
+
+```bash
+python -m pip install --upgrade --force-reinstall --no-cache-dir h5py
+```
+
+## 从视频提取原子任务片段
+
+标注器已经内置在本仓库的 `atomic_latent_vla.annotation` 中。它把同步视频降采样为默认 4 Hz 的时间戳蒙太奇，并可将 CR1 HDF5 的 30 Hz 关节轨迹通过 FK 对齐到同一组采样时刻。一次 Qwen 调用会先生成完整任务的 `global_description`，再从 0 秒开始按 SARM 风格顺序寻找下一状态转折并闭合片段；可选的第二次调用从头 review 边界。
+
+```bash
+export DASHSCOPE_API_KEY='your-key'
+
+atomic-latent-segment \
+  --provider qwen \
+  --config configs/atomic_segment_cr1_single_arm.json \
+  --video /path/base.mp4 --view-name base \
+  --task 'Pour water into the target cup' \
+  --joint-trace /path/episode_0.hdf5 \
+  --arm left \
+  --episode-id episode_0 \
+  --output outputs/annotations/episode_0.json
+```
+
+多相机时重复传入 `--video` 与对应的 `--view-name`。数据集批处理使用：
+
+```bash
+atomic-latent-segment-batch \
+  --provider qwen \
+  --manifest examples/annotation_manifest.jsonl \
+  --config configs/atomic_segment_cr1_single_arm.json \
+  --output-dir outputs/annotations
+```
+
+详细提示词、时间线校验、FK 标签复核和输出字段见 [annotation_pipeline.md](docs/annotation_pipeline.md)。
+
+## 构建训练索引
+
+```bash
+atomic-latent-build-index \
+  --hdf5 /path/to/episode_0.hdf5 \
+  --annotation /path/to/episode_0.json \
+  --output /path/to/index.jsonl \
+  --horizon 50 --min-duration-s 2.0
+```
+
+索引不复制大图像，只保存 HDF5 路径、动作窗口、原子目标和文本。`AtomicWindowDataset` 训练时懒加载当前帧 JPEG、30 Hz 状态/动作以及可选高频力序列。
+
+## 12 个原子
+
+顺序固定为：`move_{x,y,z}_{pos,neg}`、`rotate_{roll,pitch,yaw}_{pos,neg}`。夹爪、接触、停留和复杂组合不占 codebook 类别。稳定双运动用 Top-2 soft target；瞬态或杂乱片段可以标记为不可训练。
+
+详细梯度路由与数据契约见 [docs/architecture.md](docs/architecture.md) 和 [docs/data_contract.md](docs/data_contract.md)。
+
+整体训练流程图见 [PNG](docs/figures/atomic_latent_vla_training.png)、[SVG](docs/figures/atomic_latent_vla_training.svg) 和可编辑的 [Draw.io](docs/figures/atomic_latent_vla_training.drawio)。

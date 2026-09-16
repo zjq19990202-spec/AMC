@@ -1,0 +1,46 @@
+{
+  "enabled": true,
+  "force_dim": 6,
+  "state_dim": 16,
+  "force_rate_hz": 120,
+  "action_rate_hz": 30,
+  "history_samples": 120,
+  "fast_history_samples": 40,
+  "future_samples": 200,
+  "update_action_steps": 10,
+  "encoder": {
+    "temporal_stride": 4,
+    "width": 256,
+    "depth": 2,
+    "heads": 4,
+    "mlp_dim": 1024
+  },
+  "force_latent_dim": 256,
+  "future_decoder_depth": 2,
+  "loss": {
+    "flow": 1.0,
+    "future_force": 0.0,
+    "delta_z_l2": 0.0001
+  },
+  "rtc": {
+    "fixed_horizon": 50,
+    "offsets": [0, 10, 20, 30, 40],
+    "committed_prefix_weight": 0.0,
+    "suffix_weight": 1.0,
+    "learned_commit_embedding": false,
+    "lock_executed_prefix": true,
+    "reuse_noise_within_slow_cycle": true
+  },
+  "training": {
+    "stage_b1_train": ["force_conditioner"],
+    "stage_b2_train": [
+      "force_conditioner",
+      "action_expert",
+      "action_time_projection",
+      "atomic_adapter"
+    ],
+    "freeze_vit": true,
+    "freeze_vlm": true,
+    "freeze_base_action_expert": false
+  }
+}
