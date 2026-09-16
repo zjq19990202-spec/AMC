@@ -2,6 +2,8 @@
 
 Used to identify author affiliations. Marks belong to their respective institutions.
 
+- TUM: https://www.tum.de/typo3conf/ext/in2template/Resources/Public/Images/Backend/tum-logo.svg (official shape, blue fill for the white page).
+
 - DEEP Robotics, Tsinghua, Zhejiang and Shanghai AI Laboratory: institutional assets distributed on https://ytydt-reuz.github.io/FWBC-VLA/ (assets/logos/).
 - Harbin Institute of Technology: https://upload.wikimedia.org/wikipedia/en/5/50/Harbin_Institute_of_Technology_%28crest%29.gif
 - Wisconsin–Madison: https://brand.wisc.edu/content/uploads/2023/09/hor-w-crest-logo-web-digital-color-resource1.png
