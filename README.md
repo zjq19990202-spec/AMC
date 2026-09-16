@@ -19,7 +19,7 @@ Open `http://127.0.0.1:8877`.
 
 Push the `main` branch, then in the repository's **Settings → Pages**, select
 **Deploy from a branch** and choose `main` / `(root)`. The public URL will be
-`https://Robbyant.github.io/atomic-motion-coordinate/`.
+`https://zjq19990202-spec.github.io/AMC/`.
 
 ## Repository contents
 
