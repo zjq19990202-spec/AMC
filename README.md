@@ -1,29 +1,32 @@
-# Atomic Motion Coordinate
+# AMC project website
 
-Project page and supplementary demo for **Atomic Motion Coordinate for
-Language-Steerable and Force-Responsive Manipulation**.
+This is the **website branch** for [Atomic Motion Coordinate](https://zjq19990202-spec.github.io/AMC/).
+It is intentionally separate from the code release.
 
-The site is a dependency-free static page. It includes the paper PDF, a
-four-task robot demonstration, method illustrations, and task snapshots.
+| Branch | Purpose |
+| --- | --- |
+| [`main`](https://github.com/zjq19990202-spec/AMC/tree/main) | Minimal AMC training and spherical inference source code. |
+| `gh-pages` (this branch) | Static project page, paper PDF, figures, logos and demonstration videos. |
+
+GitHub Pages is configured to publish this branch from its repository root, so
+changes pushed here update the public site at:
+
+<https://zjq19990202-spec.github.io/AMC/>
 
 ## Local preview
 
 ```bash
-cd /home/admin123/下载/atomic-motion-coordinate
 python3 -m http.server 8877
 ```
 
-Open `http://127.0.0.1:8877`.
+Then open <http://127.0.0.1:8877>. This preview serves the page directly; no
+build step or web framework is required.
 
-## Publishing with GitHub Pages
+## Main website files
 
-Push the `main` branch, then in the repository's **Settings → Pages**, select
-**Deploy from a branch** and choose `main` / `(root)`. The public URL will be
-`https://zjq19990202-spec.github.io/AMC/`.
+- `index.html`, `styles.css`: static page and layout.
+- `assets/`: paper PDF, four task videos, and institution marks.
+- `images/`: steering, method, task and video-poster figures.
 
-## Repository contents
-
-- `index.html`, `styles.css`: static project page
-- `assets/amc-four-task-demo.mp4`: H.264 demo video
-- `assets/amc-paper.pdf`: paper PDF
-- `images/`: method and task figures
+Do not put model checkpoints, robot datasets, training logs, or private
+calibration assets on this branch.
